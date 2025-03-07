@@ -1,0 +1,1 @@
+"body": "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"aplicaciones\" style=\"width: 256px; height: 50px;\"><tbody><tr><td><strong><?=theme('og-externalsrc-item',2447)?></strong></td><td width=\"88px\"><img alt=\"Icono-aplicaciones\" src=\"/sites/default/files/images/aplicaciones-icono.jpg\" style=\"width: 88px; height: 46px;\"></td></tr></tbody></table>",

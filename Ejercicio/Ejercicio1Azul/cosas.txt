@@ -1,0 +1,98 @@
+
+function main() {
+  return {
+    view: function () {
+      return m(
+        "div",
+        {
+          style: mainStyle,
+        },
+        textoComponent(),
+        m(postsModelComponent()),
+        cuestionarioComponent()
+      );
+    },
+  };
+}
+
+function textoComponent() {
+  return m(
+    "div",
+    {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        marginTop: "30px",
+        width: "100%",
+      },
+    },
+    m(
+      "h1",
+      { style: { textAlign: "left", marginLeft: "10px" } },
+      "Título Principal."
+    ),
+    m(
+      "p",
+      { style: { ...paragraphStyle, padding: "10px" } },
+      "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut"
+    )
+  );
+}
+
+function postsModelComponent() {
+  return {
+    model: {
+      posts: [
+        {
+          titulo: "titulo 1", urlImg: "img/img-1.jpg", altImg: "Imagen de un paisaje", descripcion: "Esto es un texto de prueba de un texto corto"
+        }, {
+          titulo: "titulo 2", urlImg: "img/img-2.jpg", altImg: "Imagen de un paisaje", descripcion: "Esto es un texto de prueba de un texto un poco más largo de lo normal, pero es solo prueba"
+        }, {
+          titulo: "titulo 3", urlImg: "img/img-3.jpg", altImg: "Imagen de un paisaje", descripcion: "Esto es un texto de prueba de un texto corto"
+        }, {
+          titulo: "titulo 4", urlImg: "img/img-4.jpg", altImg: "Imagen de un paisaje", descripcion: "Esto es un texto de prueba de un texto un poco más largo de lo normal, pero es solo prueba"
+        }, {
+          titulo: "titulo 5", urlImg: "img/img-2.jpg", altImg: "Imagen de un paisaje", descripcion: "Esto es un texto de prueba de un texto corto"
+        }, {
+          titulo: "titulo 6", urlImg: "img/img-6.jpg", altImg: "Imagen de un paisaje", descripcion: "Esto es un texto de prueba de un texto un poco más largo de lo normal, pero es solo prueba"
+        },
+      ],
+    },
+    view: function () {
+      return m("div",
+        {
+          style: {
+            display: "flex",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "20px"
+          }
+        },
+        m("h2", { style: { width: "100%", marginLeft: "10px" } }, "Posts"),
+        this.model.posts.map(post =>
+          m("div",
+            {
+              style: {
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
+                minWidth: "350px",
+                maxWidth: "350px",
+                flexGrow: "1",
+                height: "auto",
+                border: "1px solid black",
+                borderRadius: "5px",
+                overflow: "hidden",
+                margin: "0",
+                padding: "0",
+              }
+            },
+            m("h3", { style: { textAlign: "left", width: "100%", borderBottom: "1px solid black", margin: "0", padding: "10px", marginLeft: "10px", } }, post.titulo),
+            m("img", { src: post.urlImg, alt: post.altImg, style: { width: "100%", height: "300px", } }),
+            m("p", { style: { ...paragraphStyle, padding: "10px", border: "none" } }, post.descripcion)
+          )
+        )
+      )
+    }
+  }
+}
