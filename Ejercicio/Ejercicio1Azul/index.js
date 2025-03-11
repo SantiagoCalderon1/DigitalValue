@@ -1,8 +1,9 @@
-import { inicio, contacto } from "./components.js"
+import { inicioPage, contactoPage, postPage } from "./components.js"
 
 const routes = {
-    "/Inicio": { view: () => m(inicio) },
-    "/Contacto": { view: () => m(contacto) }
+    "/Inicio": { view: () => m(inicioPage)  },
+    "/Contacto": { view: () => m(contactoPage) },
+    "/Post": { view: () => m(postPage) }
 }
 
 m.route(document.body, "/Inicio", routes)

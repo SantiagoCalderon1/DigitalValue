@@ -3,111 +3,40 @@ sintaxis básica de mithirl
 m("", {style: { }}, contenido aquí)
 */
 
-// Variables Globales
-let valueInputName = "";
-let valueInputAge = 0;
-let alturaHeader = "10vh";
+// ==================== Variables Globales ====================
+const alturaHeader = "10vh";
 let selectedPostIndex = null;
-let edad = 0;
+let breadCrumb = "";
+let selectedPost = null;
 
-// Estilos Globales
-const headerStyle = {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  height: alturaHeader,
-  width: "calc(100% - 20vw)",
-  paddingLeft: "10vw",
-  paddingRight: "10vw",
-  backgroundColor: "#466874",
-  position: "fixed",
-  top: "0",
-  zIndex: "10000",
-  boxShadow: "5px 5px 10px 0 rgba(0, 0, 0, 0.5)",
-  fontSize: "1.20rem",
-};
+// ==================== Estilos Globales ====================
+const headerStyle = { display: "flex", flexDirection: "row", alignItems: "center", height: alturaHeader, width: "calc(100% - 20vw)", paddingLeft: "10vw", paddingRight: "10vw", backgroundColor: "#466874", position: "fixed", top: "0", zIndex: "99999", boxShadow: "5px 5px 10px 0 rgba(0, 0, 0, 0.5)", fontSize: "1.20rem", };
 
-const mainStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "50px",
-  width: "calc(100% - 20vw)",
-  backgroundColor: "#f7f7e2",
-  marginTop: alturaHeader,
-  paddingLeft: "20px",
-  paddingRight: "20px",
-};
+const mainStyle = { display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", gap: "50px", width: "calc(100% - 20vw)", backgroundColor: "#f7f7e2", marginTop: alturaHeader, paddingLeft: "20px", paddingRight: "20px", };
 
-const footerStyle = {
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "space-between",
-  alignItems: "center",
-  height: "10vh",
-  width: "calc(100% - 20vw)",
-  paddingLeft: "10vw",
-  paddingRight: "10vw",
-  backgroundColor: "#466874",
-  fontSize: "1rem",
-};
+const footerStyle = { display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", height: "10vh", width: "calc(100% - 20vw)", paddingLeft: "10vw", paddingRight: "10vw", backgroundColor: "#466874", fontSize: "1rem", };
 
 const iconsStyle = { fontSize: "35px", color: "white", cursor: "pointer" };
 
-const linkStyle = { color: "white", textDecoration: "none" };
+const linkStyle = { color: "white", textDecoration: "none", padding: "5px" };
 
-const paragraphStyle = {
-  fontSize: "14px",
-  textAlign: "justify",
-  borderRadius: "5px",
-  margin: "0",
-  height: "auto",
-};
+const paragraphStyle = { fontSize: "14px", textAlign: "justify", borderRadius: "5px", margin: "0", height: "auto", };
 
-const inputStyle = {
-  border: "1px solid black",
-  width: "70%",
-  padding: "7.5px 0",
-  textAlign: "center",
-  borderRadius: "5px",
-  fontSize: "16px",
-};
+const inputStyle = { width: "75%", padding: "8px", textAlign: "center", borderRadius: "5px", fontSize: "16px", border: "1px solid #ccc", marginBottom: "10px", };
 
-const cuestionarioStyle = {
-  width: "50%",
-  height: "150px",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  gap: "10px",
-};
+const cuestionarioStyle = { width: "50%", height: "200px", display: "flex", flexDirection: "column", justifyContent: "center", gap: "10px", };
 
-// Componentes base
+// ==================== Componentes base ====================
 function header() {
-  return {
-    view: function () {
-      return m(
-        "header", //padre header
-        {
-          style: headerStyle,
-        },
-        logoComponent(),
-        navComponent()
-      );
-    },
-  };
+  let width = window.innerWidth;
+  window.addEventListener("resize", () => { width = window.innerWidth; m.redraw(); });
+  return { view: function () { return width < 768 ? m(HeaderBurger) : m(HeaderNormal); }, };
 }
 
-function main(content, styleAdditional = null) {
-  console.log(styleAdditional);
+function main() {
   return {
-    view: function () {
-      return m(
-        "div",
-        {
-          style: { ...mainStyle, ...styleAdditional },
-        },
-        ...content
-      );
+    view: function ({ attrs, children }) {
+      return m( "div", { style: { ...attrs.mainStyle }, }, ...children );
     },
   };
 }
@@ -116,99 +45,121 @@ function footer() {
   return {
     view: function () {
       return m(
-        "div",
-        {
-          style: footerStyle,
-        },
-        m(
-          "p",
-          { style: { color: "white", marginLeft: "20px", width: "50%" } },
-          "Hecho por Santiago"
-        ),
-        m(
-          "div",
-          {
-            style: {
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "end",
-              alignItems: "center",
-              width: "50%",
-              marginRight: "20px",
-              gap: "20px",
-            },
-          },
-          route("/Contacto", "Contacto"),
-          link("#", "Sobre Nosotros")
-        )
+        "div", { style: footerStyle, },
+        m( "p", { style: { color: "white", marginLeft: "20px", width: "50%" } }, "Hecho por Santiago" ),
+        m( "div", { style: { display: "flex", flexDirection: "row", justifyContent: "end", alignItems: "center", width: "50%", marginRight: "20px", gap: "20px", }, }, route("/Contacto", "Contacto"), link("#", "Sobre Nosotros") )
       );
     },
   };
 }
 
-// Componentes hijos de header
-function logoComponent() {
-  return m(
-    "div",
-    {
-      style: {
-        width: "15%",
-        height: alturaHeader,
-      },
+// ==================== Componentes hijos de HEADER ====================
+function HeaderBurger() {
+  return {
+    view: () => {
+      return m("header", { style: headerStyle }, logoSection(), m(NavBurger));
     },
-    m("img", {
-      src: "img/perro.png",
-      alt: "Imagen de un logo",
-      style: {
-        height: "100%",
-        width: alturaHeader,
-      },
-    })
-  );
+  };
 }
 
-function navComponent() {
+function NavBurger() {
+  let styleLi = { listStyle: "none", display: "flex", alignItems: "center", justifyContent: " center", width: "30%", borderBottom: "1px solid white", textAlign: "center", };
+
+  const AnimatedMenu = {
+    oncreate: ({ dom }) => {
+      dom.style.transform = "translateX(150%)";
+      dom.style.zIndex = "500";
+      requestAnimationFrame(() => {
+        dom.style.transition = "transform 0.75s ease-out";
+        dom.style.transform = "translateX(0)";
+      });
+    },
+    onbeforeremove: ({ dom }) => {
+      return new Promise((resolve) => {
+        dom.style.transition = "transform 0.5s ease-in";
+        dom.style.transform = "translateX(150%)";
+        setTimeout(resolve, 500);
+      });
+    },
+    view: () =>
+      m(
+        "ul",
+        {
+          style: { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "30px", listStyle: "none", background: "#466874", position: "fixed", top: alturaHeader, width: "120%", margin: "0", paddingTop:"50px", border: "1px solid white", right: "-66px", zIndex: "1000", },
+        },
+        m("li", { style: { ...styleLi } }, route("/Inicio", "Inicio")),
+        m("li", { style: { ...styleLi } }, link("#", "Pagina2")),
+        m("li", { style: { ...styleLi } }, socialMedia())
+      ),
+  };
+
+  let show = false;
+
+  return {
+    view: () => {
+      return m(
+        "nav",
+        {
+          style: { display: "flex", alignItems: "center", justifyContent: "end", height: alturaHeader, width: "100%", position: "static", zIndex: "2000", },
+        },
+        m("i.fa-solid.fa-bars", {
+          onclick: () => {
+            show = !show;
+            m.redraw();
+          },
+          style: { color: "white", fontSize: "30px", cursor: "pointer" },
+        }),
+        show && m(AnimatedMenu)
+      );
+    },
+  };
+}
+
+function HeaderNormal() {
+  return {
+    view: () => {
+      return m("header", { style: headerStyle }, logoSection(), navNormal());
+    },
+  };
+}
+
+function navNormal() {
   return m(
     "nav",
     {
-      style: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        height: alturaHeader,
-        width: "100%",
-      },
+      style: { display: "flex", alignItems: "center", justifyContent: "space-between", height: alturaHeader, width: "100%", },
     },
     m(
       "ul",
       {
-        style: {
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: "30px",
-          listStyle: "none",
-        },
+        style: { display: "flex", flexDirection: "row", alignItems: "center", gap: "30px", listStyle: "none", },
       },
       m("li", route("/Inicio", "Inicio")),
       m("li", link("#", "Pagina2"))
     ),
-    socialMediaComponent()
+    socialMedia()
   );
 }
 
-function socialMediaComponent() {
+function logoSection() {
   return m(
-    "div", // redes sociales
+    "div",
     {
-      style: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-        height: alturaHeader,
-        width: "150px",
-      },
+      style: { width: "15%", height: alturaHeader, },
+    },
+    m("img", {
+      src: "img/perro.png",
+      alt: "Imagen de un logo",
+      style: { height: "100%", width: alturaHeader, },
+    })
+  );
+}
+
+function socialMedia() {
+  return m(
+    "div",
+    {
+      style: { display: "flex", flexDirection: "row", justifyContent: "space-evenly", alignItems: "center", height: alturaHeader, width: "150px", },
     },
     m("i.fa-brands.fa-instagram", {
       style: iconsStyle,
@@ -222,75 +173,62 @@ function socialMediaComponent() {
         window.open("https://www.facebook.com/", "_blank");
       },
     })
-    /* m(
-      "img", //logo instagram
-      {
-        src: "img/logo-instagram.png",
-        alt: "Logo de Instagram",
-        style: {
-          height: "35px",
-          width: "35px",
-        },
-      }
-    ),
-    m(
-      "img", //logo facebook
-      {
-        src: "img/logo-facebook.png",
-        alt: "Logo de facebook",
-        style: {
-          height: "40px",
-          width: "40px",
-        },
-      }
-    ) */
   );
 }
 
-// Componentes dinamicos
-function link(href, content) {
-  return m("a", { href: `${href}`, style: { ...linkStyle } }, `${content}`);
-}
+// ==================== Fin Componentes hijos de header ====================
 
-function route(href, content) {
+// ==================== Componentes dinamicos ====================
+function link(href, content) {
+  let breadCrumbAUX = breadCrumb == content;
   return m(
-    m.route.Link,
+    "a",
     {
+      onclick: () => {
+        breadCrumb = content;
+      },
       href: `${href}`,
-      style: linkStyle,
+      style: { ...linkStyle, fontWeight: breadCrumbAUX ? "bold" : "normal", textDecoration: breadCrumbAUX ? "underline" : "none", },
     },
     `${content}`
   );
 }
 
-// Componentes de Inicio
-function textoComponent() {
+function route(href, content) {
+  let breadCrumbAUX = breadCrumb == content;
+
   return m(
-    "div",
+    m.route.Link,
     {
-      style: {
-        display: "flex",
-        flexDirection: "column",
-        marginTop: "30px",
-        width: "100%",
-        boxShadow: "0px 10px 20px 0 rgba(0, 0, 0, 0.2)",
-        borderRadius: "5px",
+      onclick: () => {
+        breadCrumb = content;
       },
+      href: `${href}`,
+      style: { ...linkStyle, fontWeight: breadCrumbAUX ? "bold" : "normal", textDecoration: breadCrumbAUX ? "underline" : "none", },
     },
-    m(
-      "h1",
-      { style: { textAlign: "left", marginLeft: "10px" } },
-      "Título Principal"
-    ),
-    m(
-      "p",
-      { style: { ...paragraphStyle, padding: "10px" } },
-      "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut"
-    )
+    `${content}`
   );
 }
+// ==================== Fin Componentes dinamicos ====================
 
-function postsModelComponent() {
+// ==================== Contenido INICIO ====================
+
+function TextoComponent() {
+  return {
+    view: () => {
+      return m(
+        "div",
+        {
+          style: { display: "flex", flexDirection: "column", marginTop: "30px", width: "100%", boxShadow: "0px 10px 20px 0 rgba(0, 0, 0, 0.2)", borderRadius: "5px", },
+        },
+        m( "h1", { style: { textAlign: "left", marginLeft: "10px" } }, "Título Principal" ),
+        m( "p", { style: { ...paragraphStyle, padding: "10px" } }, "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut" )
+      );
+    },
+  };
+}
+
+function PostsModelComponent() {
   return {
     model: {
       posts: [
@@ -341,69 +279,38 @@ function postsModelComponent() {
     view: function () {
       let additionalContent = null;
       if (selectedPostIndex != null) {
-        additionalContent = notificarSelectedPostComponent(
+        additionalContent = NotificarSelectedPostElement(
           this.model.posts[selectedPostIndex].titulo
         );
       } else {
-        additionalContent = notificarSelectedPostComponent();
+        additionalContent = NotificarSelectedPostElement();
       }
+
+      let width = window.innerWidth;
+
+      window.addEventListener("resize", () => {
+        width = window.innerWidth;
+        m.redraw();
+      });
 
       return m(
         "div",
         {
-          style: {
-            display: "flex",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "10px",
-            boxShadow: "0px 10px 20px 0 rgba(0, 0, 0, 0.2)",
-            borderRadius: "10px",
-            padding: "10px",
-          },
+          style: { display: "flex", justifyContent: width < 768 ? "center" : "space-between", flexWrap: "wrap", gap: "10px", boxShadow: "0px 10px 20px 0 rgba(0, 0, 0, 0.2)", borderRadius: "10px", padding: "10px", },
         },
         m("h2", { style: { width: "100%", marginLeft: "10px" } }, "Posts"),
-        this.model.posts.map((post, index) =>
-          postComponent(
-            post,
-            index,
-            this.selectedPost.bind(this),
-            selectedPostIndex
-          )
-        ),
-        additionalContent
+        this.model.posts.map((post, index) => postElement( post, index, this.selectedPost.bind(this), selectedPostIndex))
+        ,additionalContent
       );
     },
   };
 }
 
-function postComponent(
-  { titulo, urlImg, altImg, descripcion },
-  index,
-  selectedPost,
-  selectedPostIndex
-) {
+function postElement({titulo, urlImg, altImg, descripcion}, index, selectedPost, selectedPostIndex) {
   return m(
     "div",
     {
-      style: {
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "column",
-        minWidth: "350px",
-        maxWidth: "350px",
-        height: "100%",
-        flexGrow: "1",
-        border: "1px solid black",
-        borderRadius: "5px",
-        overflow: "hidden",
-        margin: "0",
-        padding: "0",
-        cursor: "pointer",
-        boxShadow:
-          selectedPostIndex == index
-            ? "0px 10px 10px 0 rgba(0, 0, 0, 0.5)"
-            : "",
-      },
+      style: { display: "flex", alignItems: "center", flexDirection: "column", minWidth: "350px", maxWidth: "350px", height: "100%", flexGrow: "1", border: "1px solid black", borderRadius: "5px", overflow: "hidden", margin: "0", padding: "0", cursor: "pointer", boxShadow: selectedPostIndex == index ? "0px 10px 10px 0 rgba(0, 0, 0, 0.5)" : "", },
       onclick: () => {
         selectedPost(index);
       },
@@ -411,54 +318,18 @@ function postComponent(
     m(
       "h3",
       {
-        style: {
-          textAlign: "left",
-          width: "100%",
-          borderBottom: "1px solid black",
-          margin: "0",
-          padding: "10px",
-          marginLeft: "10px",
-        },
+        style: { textAlign: "left", width: "100%", borderBottom: "1px solid black", margin: "0", padding: "10px", marginLeft: "10px", },
       },
       titulo
     ),
-    m(
-      "div",
-      { style: { width: "100%", height: "auto" } },
-      m("img", {
-        src: urlImg,
-        alt: altImg,
-        style: {
-          width: "100%",
-          height: "300px",
-          objectFit: "cover",
-        },
-      })
-    ),
-    m(
-      "div",
-      {
-        style: {
-          height: "75px",
-          overflow: "auto",
-          width: "100%",
-        },
-      },
-      m(
-        "p",
-        {
-          style: {
-            padding: "10px",
-            border: "none",
-          },
-        },
-        descripcion
-      )
+    m( "div", { style: { width: "100%", height: "auto" } }, m("img", { src: urlImg, alt: altImg, style: { width: "100%", height: "300px", objectFit: "cover", }, }) ),
+    m( "div", { style: { height: "75px", overflow: "auto", width: "100%", }, },
+      m( "p", { style: { padding: "10px", border: "none", }, }, descripcion )
     )
   );
 }
 
-function notificarSelectedPostComponent(titleSelectedPost = "") {
+function NotificarSelectedPostElement(titleSelectedPost = "") {
   let content = [];
   if (titleSelectedPost != "") {
     content.push(
@@ -487,88 +358,97 @@ function notificarSelectedPostComponent(titleSelectedPost = "") {
   return m(
     "div",
     {
-      style: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-        width: "100%",
-        height: "auto",
-        margin: "30px 0",
-      },
+      style: { display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", width: "100%", height: "auto", margin: "30px 0", },
     },
     ...content
   );
 }
-function cuestionarioComponent() {
-  return m(
-    "div",
-    {
-      style: {
-        display: "flex",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        marginBottom: "20px",
-        wrap: "wrap",
-        boxShadow: "0px 10px 20px 0 rgba(0, 0, 0, 0.2)",
-        borderRadius: "5px",
-        padding: "20px",
-      },
+// ==================== Fin Contenido INICIO ====================
+
+// ==================== Inicio cuestionario ====================
+let formData = {
+  valueInputName: null,
+  valueInputAge: null,
+};
+
+let inputNameValue = false;
+let inputAgeValue = false;
+
+function CuestionarioComponent() {
+  return {
+    view: function () {
+      function manageForm(e) {
+        e.preventDefault();
+        console.log("Formulario prevenido.");
+        let formDataAUX = new FormData(e.target);
+        formData.valueInputName = formDataAUX.get("nombre");
+        formData.valueInputAge = calculateAge(
+          formDataAUX.get("fechaNacimiento")
+        );
+        m.redraw();
+      }
+      return m(
+        "div",
+        {
+          style: {
+            display: "flex",
+            justifyContent: "space-between",
+            flexDirection: "column",
+            marginBottom: "20px",
+            borderRadius: "5px",
+            width: "100%",
+            padding: "20px",
+          },
+        },
+        m(
+          "h2",
+          { style: { width: "100%", marginLeft: "10px" } },
+          "Cuestionario"
+        ),
+        m(
+          "div",
+          {
+            style: { display: "flex", justifyContent: "space-between", flexDirection: "row", boxShadow: "0px 10px 20px 0 rgba(0, 0, 0, 0.2)", borderRadius: "5px", width: "95%", padding: "20px", },
+          },
+          m(
+            "form",
+            {
+              onsubmit: (e) => manageForm(e),
+              style: {
+                ...cuestionarioStyle,
+                alignItems: "start",
+              },
+            },
+            [
+              inputName(),
+              inputAge(),
+              m( "div", { style: { display: "flex", justifyContent: "center", alignItems: "center", width: "75%", }, }, m(inputSubmit) ),
+            ]
+          ),
+          m(
+            "div",
+            {
+              style: {
+                ...cuestionarioStyle,
+                alignItems: "end",
+              },
+            },
+            m(ShowResultComponent)
+          )
+        )
+      );
     },
-    m("h2", { style: { width: "100%", marginLeft: "10px" } }, "Cuestionario"),
-    m(
-      "form",
-      {
-        onsubmit: (e) => {
-          e.preventDefault();
-          let formData = new FormData(e.target);
-          let nombre = formData.get("nombre");
-          let fechaNacimiento = formData.get("fechaNacimiento");
-
-          if (nombre && fechaNacimiento) {
-            valueInputName = nombre;
-            valueInputAge = calculateAge(fechaNacimiento);
-            console.log("Formulario enviado:", valueInputName, valueInputAge);
-
-          } else {
-            alert("Por favor, complete todos los campos.");
-          }
-        },
-        style: {
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "start",
-        },
-      },
-      inputName(),
-      inputAge(),
-      inputSubmit()
-    ),
-    m(
-      "div",
-      {
-        style: {
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-        },
-      },
-      showResultComponent()
-    )
-  );
+  };
 }
 
 function inputName() {
   return m("input", {
     type: "text",
     name: "nombre",
-    placeholder: "Introduce tu nombre por favor",
-    required: true,
-    style: {
-      padding: "8px",
-      marginBottom: "10px",
-      border: "1px solid #ccc",
-      borderRadius: "4px",
+    placeholder: "Introduce tu nombre*",
+    style: { ...inputStyle },
+    onchange: (e) => {
+      inputNameValue = e.target.value != "" ? true : false;
     },
   });
 }
@@ -576,52 +456,53 @@ function inputName() {
 function inputAge() {
   return m(
     "div",
-    {
-      style: {
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-      },
-    },
+    { style: { display: "flex", flexDirection: "column", width: "100%" } },
     m(
       "label",
-      { style: { padding: "5px 0" } },
-      "Introduce fecha de nacimiento:"
+      { style: { width: "100%", padding: "5px 0" } },
+      "Introduce tu fecha de nacimiento*:"
     ),
     m("input", {
       type: "date",
       name: "fechaNacimiento",
       required: true,
       max: new Date().toISOString().split("T")[0],
-      style: {
-        padding: "8px",
-        marginBottom: "10px",
-        border: "1px solid #ccc",
-        borderRadius: "4px",
+      style: { ...inputStyle },
+      onchange: (e) => {
+        inputAgeValue = e.target.value != "" ? true : false;
       },
     })
   );
 }
 
-function inputSubmit(texto = "Enviar") {
-  return m("input", {
-    type: "submit",
-    value: texto, 
-    style: {
-      padding: "8px 16px",
-      backgroundColor: "#466874",
-      color: "white",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer",
-    },
-    onmouseover: (e) => {
-      e.target.style.backgroundColor = "#049CB3";
-    },
-    onmouseout: (e) => {
-      e.target.style.backgroundColor = "#466874";
-    },
-  });
+function inputSubmit() {
+  let buttonColor = "#466874";
+  return {
+    view: () =>
+      m(
+        "button",
+        {
+          //disabled: !(inputNameValue && inputAgeValue),
+          type: "submit",
+          style: {
+            ...inputStyle,
+            backgroundColor: !(inputNameValue && inputAgeValue)
+              ? "lightgray"
+              : buttonColor,
+            color: "white",
+            cursor: "pointer",
+            pointerEvents: !(inputNameValue && inputAgeValue) ? "none" : "",
+          },
+          onmouseenter: function () {
+            buttonColor = "#049CB3";
+          },
+          onmouseleave: function () {
+            buttonColor = "#466874";
+          },
+        },
+        "Enviar"
+      ),
+  };
 }
 
 function calculateAge(fechaNacimiento) {
@@ -638,61 +519,208 @@ function calculateAge(fechaNacimiento) {
   return age;
 }
 
-function showResultComponent() {
-  return m(
-    "div",
-    {
-      style: {
-        border: "1px solid black",
-        borderRadius: "5px",
-        width: "75%",
-        height: "calc(100% - 10px)",
-        fontSize: "16px",
-      },
+function ShowResultComponent() {
+  return {
+    view: () => {
+      return m(
+        "div",
+        {
+          style: {
+            border: "1px solid black",
+            borderRadius: "5px",
+            width: "75%",
+            height: "calc(100% - 10px)",
+            fontSize: "16px",
+            padding: "10px",
+          },
+        },
+        m(
+          "p",
+          { style: { paddingLeft: "10px" } },
+          formData.valueInputName != null
+            ? `Tu nombre es ${formData.valueInputName}`
+            : "Aún no has ingresado un nombre."
+        ),
+        m(
+          "p",
+          { style: { paddingLeft: "10px" } },
+          formData.valueInputAge != null
+            ? `Tu edad es ${formData.valueInputAge} años.`
+            : "Aún no has ingresado tu fecha de nacimiento."
+        )
+      );
     },
-    m(
-      "p",
-      { style: { paddingLeft: "10px" } },
-      valueInputName
-        ? `Tu nombre es ${valueInputName}`
-        : "Aún no has ingresado un nombre."
-    ),
-    m(
-      "p",
-      { style: { paddingLeft: "10px" } },
-      valueInputAge
-        ? `Naciste el ${valueInputAge}.`
-        : "Aún no has ingresado tu edad."
-    )
-  );
+  };
+}
+// ==================== Fin cuestionario ====================
+
+// ==================== CONTACTO ====================
+function ContactoComponent() {
+  return {
+    view: () => {
+      return m(
+        "div",
+        {
+          style: {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            width: "100%",
+          },
+        },
+        m("h2", { style: {} }, "Esta es la pagina de contacto")
+      );
+    },
+  };
 }
 
-// Componentes de Contacto
-function contactoComponent() {
+// ==================== FIN CONTACTO ====================
+
+// ==================== POST ====================
+function PostsModelComponentV2() {
+  return {
+    model: {
+      posts: [
+        {
+          titulo: "titulo 1",
+          urlImg: "img/img-1.jpg",
+          altImg: "Imagen de un paisaje",
+          descripcion: "Esto es un texto de prueba de un texto corto",
+        },
+        {
+          titulo: "titulo 2",
+          urlImg: "img/img-2.jpg",
+          altImg: "Imagen de un paisaje",
+          descripcion:
+            "Esto es un texto de prueba de un texto un poco más largo de lo normal, pero es solo prueba.",
+        },
+        {
+          titulo: "titulo 3",
+          urlImg: "img/img-3.jpg",
+          altImg: "Imagen de un paisaje",
+          descripcion: "Esto es un texto de prueba de un texto corto",
+        },
+      ],
+    },
+    openPage: function (post) {
+      selectedPost = post;
+
+      m.route.set("/Post");
+    },
+    view: function () {
+      return m(
+        "div",
+        {
+          style: {
+            display: "flex",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "10px",
+            boxShadow: "0px 10px 20px 0 rgba(0, 0, 0, 0.2)",
+            borderRadius: "10px",
+            padding: "10px",
+            marginBottom: "50px",
+          },
+        },
+        m("h2", { style: { width: "100%", marginLeft: "10px" } }, "Posts"),
+        this.model.posts.map((post) =>
+          postElementV2(post, this.openPage.bind(this))
+        )
+      );
+    },
+  };
+}
+
+function postElementV2({ titulo, urlImg, altImg, descripcion }, openPage) {
   return m(
     "div",
     {
       style: {
         display: "flex",
-        justifyContent: "center",
         alignItems: "center",
+        flexDirection: "column",
+        minWidth: "350px",
+        maxWidth: "350px",
         height: "100%",
-        width: "100%",
+        flexGrow: "1",
+        border: "1px solid black",
+        borderRadius: "5px",
+        overflow: "hidden",
+        margin: "0",
+        padding: "0",
+        cursor: "pointer",
+        boxShadow: "0px 10px 10px 0 rgba(0, 0, 0, 0.5)",
+      },
+      onclick: () => {
+        if (openPage != null) {
+          openPage({ titulo, descripcion });
+        }
       },
     },
-    m("h2", { style: {} }, "Esta es la pagina de contacto")
+    m(
+      "h3",
+      {
+        style: {
+          textAlign: "left",
+          width: "100%",
+          borderBottom: "1px solid black",
+          margin: "0",
+          padding: "10px",
+          marginLeft: "10px",
+        },
+      },
+      titulo
+    ),
+    urlImg
+      ? m(
+          "div",
+          { style: { width: "100%", height: "auto" } },
+          m("img", {
+            src: urlImg,
+            alt: altImg,
+            style: { width: "100%", height: "300px", objectFit: "cover" },
+          })
+        )
+      : null,
+    m(
+      "div",
+      { style: { height: "75px", overflow: "auto", width: "100%" } },
+      m("p", { style: { padding: "10px", border: "none" } }, descripcion)
+    )
   );
 }
 
-// Paginas
-function inicio() {
-  let content = [];
-  content.push(textoComponent());
-  content.push(m(postsModelComponent()));
-  content.push(cuestionarioComponent());
+function PostComponent() {
+  return {
+    view: function () {
+      if (!selectedPost) {
+        return m("div", "No hay post seleccionado.");
+      }
+      return m(
+        "div",
+        {
+          style: {
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+          },
+        },
+        postElementV2(selectedPost)
+      );
+    },
+  };
+}
+// ==================== FIN POST ====================
+
+// ==================== PAGINAS ====================
+function inicioPage() {
   return {
     oncreate: () => {
       window.scrollTo(0, 0);
+      //viewPort = window.
     },
     view: () => [
       m(
@@ -707,19 +735,22 @@ function inicio() {
           },
         },
         m(header),
-        m(main(content)),
+        m(main, { mainStyle }, [
+          m(TextoComponent),
+          m(PostsModelComponent),
+          m(CuestionarioComponent),
+          m(PostsModelComponentV2),
+        ]),
         m(footer)
       ),
     ],
   };
 }
 
-function contacto() {
-  let content = [];
+function contactoPage() {
   let styleAdditional = {
     height: "80vh",
   };
-  content.push(contactoComponent());
   return {
     oncreate: () => {
       window.scrollTo(0, 0);
@@ -737,19 +768,19 @@ function contacto() {
           },
         },
         m(header),
-        m(main(content, styleAdditional)),
+        m(main, { mainStyle: { ...mainStyle, ...styleAdditional } }, [
+          m(ContactoComponent),
+        ]),
         m(footer)
       ),
     ],
   };
 }
 
-function post() {
-  let content = [];
+function postPage() {
   let styleAdditional = {
     height: "80vh",
   };
-  content.push(contactoComponent());
   return {
     oncreate: () => {
       window.scrollTo(0, 0);
@@ -762,16 +793,20 @@ function post() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            justifyContent: "center",
             width: "100%",
+            height: "100vh",
             fontSize: "14px",
           },
         },
         m(header),
-        m(main(content, styleAdditional)),
+        m(main, { mainStyle: { ...mainStyle, ...styleAdditional } }, [
+          m(PostComponent),
+        ]),
         m(footer)
       ),
     ],
   };
 }
 
-export { inicio, contacto };
+export { inicioPage, contactoPage, postPage };
