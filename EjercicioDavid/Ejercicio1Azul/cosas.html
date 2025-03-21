@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="https://components.digitalvalue.es/lib/mithril.min.js"></script>
+</head>
+
+<body>
+  <div id="select">
+  </div>
+</body>
+
+<script type="module">
+  import { Select } from './cosas.js'
+
+
+  function Main() {
+    let model = { 
+      animal: ['pato', 'perro', 'gato'] 
+    }
+
+    return {
+      view: () => [
+        m("div", { style: "margin: 5rem; background: blue;" }, [
+          m(Select, { data: model, name: "numero", options: ['uno', 'dos', 'tres'] }),
+          m(Select, { data: model, name: "color", options: ['rojo', 'verde', 'azul '] }),
+          m(Select, { data: model, name: "animal", options: ['pato', 'perro', 'gato'] }),
+        ]),
+
+        m("pre", JSON.stringify(model, null, 2))
+      ]
+    }
+  }
+
+  
+
+  m.mount(document.getElementById("select"), Main)
+</script>
+
+</html>

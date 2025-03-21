@@ -1,0 +1,18 @@
+[
+    {
+        "title": "Product 1",
+        "src": "best-product-1.jpg",
+        "description": "Producto Número 1",
+        "price": 50
+    },{
+        "title": "Product 2",
+        "src": "best-product-2.jpg",
+        "description": "Producto Número 2",
+        "price": 50
+    },{
+        "title": "Product 3",
+        "src": "best-product-3.jpg",
+        "description": "Producto Número 3",
+        "price": 50
+    }
+]
